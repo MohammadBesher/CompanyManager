@@ -1,0 +1,50 @@
+# 🧠 System Architecture - Employee Manager (C++)
+
+This document describes the internal architecture and design decisions for the Employee Manager system implemented in C++. It explains the key data structures, component responsibilities, and data flow within the system.
+
+---
+
+## 📚 Overview
+
+The system manages employees and companies with operations such as hiring, promoting, salary updates, and merging companies. It is designed for efficiency using:
+
+- Global and company-level hash tables
+- Rank trees for salary-based operations
+- Union-Find structure for managing company mergers
+- Encapsulated data models for employees and salary-based keys
+
+---
+
+## 🔧 Core Components
+
+### 1. EmployeeManager
+
+Acts as the central controller for all operations. It contains:
+
+- `employeeHash`: HashTable for all employees (global)
+- `employeesTree`: RankTree for employees with salary > 0
+- `Companies`: Union-Find structure managing company groups
+- `companies_arr`: Array of `ArrData` pointers, one for each company
+
+---
+
+## 🏗️ Data Structure Visualization
+
+```plaintext
+                    ┌────────────────────┐
+                    │   EmployeeManager  │
+                    └────────────────────┘
+                               │
+       ┌──────────────────────┼──────────────────────┐
+       ▼                      ▼                      ▼
+┌───────────────┐     ┌────────────────┐     ┌────────────────────┐
+│ employeeHash  │     │ Companies (UF) │     │    Companies_arr   │
+│ Global Hash   │     │ Union-Find DS  │     │   Array of k items │
+└───────────────┘     └────────────────┘     └─────────┬──────────┘
+         │                                         ┌────▼────┐
+         │                                         │ ArrData │
+         ▼                                         └────┬────┘
+  ┌───────────────┐               ┌──────────────┐   ┌──▼────────────┐
+  │ EmployeeData  │               │ employeesHash│   │ employeesTree │
+  │ ID, Salary,   │◄──────────────│   (per comp) │   │  (salary>0)   │
+  │ Grade         │               └──────────────┘   └───────────────┘
